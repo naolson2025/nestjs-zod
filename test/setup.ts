@@ -2,7 +2,7 @@ import { rm } from 'fs/promises';
 import { join } from 'path';
 import { getConnection } from 'typeorm';
 
-// this will remove the test.sqlite filte before each e2e test
+// this will remove the test.sqlite file before each e2e test
 global.beforeEach(async () => {
   try {
     await rm(join(__dirname, '..', 'test.sqlite'));

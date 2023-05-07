@@ -10,8 +10,9 @@ import {
   NotFoundException,
   Session,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreateUserDto, createUserSchema } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
 import { Serialize } from '../interceptors/serialize.interceptor';
@@ -20,6 +21,7 @@ import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from './user.entity';
 import { AuthGuard } from '../guards/auth.guard';
+import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
 // import the custom Serialize decorator
 // Serialize the entire controller w/all request handlers
@@ -60,6 +62,7 @@ export class UsersController {
   }
 
   @Post('/signup')
+  @UsePipes(new ZodValidationPipe(createUserSchema))
   async createUser(@Body() body: CreateUserDto, @Session() session: any) {
     const user = await this.authService.signup(body.email, body.password);
     session.userId = user.id;
@@ -67,6 +70,7 @@ export class UsersController {
   }
 
   @Post('/signin')
+  @UsePipes(new ZodValidationPipe(createUserSchema))
   async signin(@Body() body: CreateUserDto, @Session() session: any) {
     const user = await this.authService.signin(body.email, body.password);
     session.userId = user.id;
